@@ -1,0 +1,155 @@
+{
+  "description": "A New Flow",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "trigger",
+      "transitions": [
+        {
+          "event": "incomingMessage"
+        },
+        {
+          "event": "incomingCall"
+        },
+        {
+          "event": "incomingConversationMessage"
+        },
+        {
+          "next": "svc_create_doc",
+          "event": "incomingRequest"
+        },
+        {
+          "event": "incomingParent"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "svc_create_doc",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "svc_wait_delay",
+          "event": "success"
+        },
+        {
+          "next": "svc_wait_delay",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "XXX",
+        "environment_sid": "XXX",
+        "offset": {
+          "x": 300,
+          "y": 250
+        },
+        "function_sid": "XXX",
+        "parameters": [
+          {
+            "value": "{{flow.data.transcript_sid}}",
+            "key": "transcriptionSid"
+          }
+        ],
+        "url": "https://XXX-XXX-dev.twil.io/api/create-doc"
+      }
+    },
+    {
+      "name": "svc_analyse_openai",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "svc_analyse_humeai",
+          "event": "success"
+        },
+        {
+          "next": "svc_analyse_humeai",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "XXX",
+        "environment_sid": "XXX",
+        "offset": {
+          "x": 120,
+          "y": 910
+        },
+        "function_sid": "XXX",
+        "parameters": [
+          {
+            "value": "{{flow.data.transcript_sid}}",
+            "key": "transcriptionSid"
+          }
+        ],
+        "url": "https://XXX-XXX-dev.twil.io/api/analyse-openai"
+      }
+    },
+    {
+      "name": "svc_analyse_humeai",
+      "type": "run-function",
+      "transitions": [
+        {
+          "event": "success"
+        },
+        {
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "XXX",
+        "environment_sid": "XXX",
+        "offset": {
+          "x": -50,
+          "y": 1210
+        },
+        "function_sid": "XXX",
+        "parameters": [
+          {
+            "value": "{{flow.data.transcript_sid}}",
+            "key": "transcriptionSid"
+          }
+        ],
+        "url": "https://XXX-XXX-dev.twil.io/api/analyse-humeai"
+      }
+    },
+    {
+      "name": "svc_wait_delay",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "svc_analyse_openai",
+          "event": "success"
+        },
+        {
+          "next": "svc_analyse_openai",
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "service_sid": "XXX",
+        "environment_sid": "XXX",
+        "offset": {
+          "x": 170,
+          "y": 590
+        },
+        "function_sid": "XXX",
+        "parameters": [
+          {
+            "value": "{{flow.data.transcript_sid}}",
+            "key": "transcriptionSid"
+          }
+        ],
+        "url": "https://XXX-XXX-dev.twil.io/api/delay"
+      }
+    }
+  ],
+  "initial_state": "Trigger",
+  "flags": {
+    "allow_concurrent_calls": true
+  }
+}
